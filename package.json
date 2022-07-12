@@ -1,0 +1,23 @@
+{
+  "name": "crypto-portfolio-tracker",
+  "version": "0.0.1",
+  "description": "An ultra lightweight crypto portofolio recorder",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": ""
+  },
+  "author": "Speedlight",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "express": "^4.18.1",
+    "node-fetch": "^3.2.6",
+    "pouchdb": "^7.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19",
+    "pug": "^3.0.2"
+  }
+}
