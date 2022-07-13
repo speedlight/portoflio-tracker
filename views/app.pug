@@ -1,0 +1,41 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset='UTF-8')
+    title= title
+    link(rel='stylesheet' type="text/css" href='/css/style.css')
+  body
+    header
+      h1 Welcome to your portfolio!
+      div 
+        p Price tracker
+        p Use comma separated values to query assets (i.e bitcoin,cosmos,ethereum)
+        p Link to complete list: 
+          a(href='https://docs.google.com/spreadsheets/d/1wTTuxXt8n9q7C4NDXqQpI3wpKu1_5bGVmP9Xz0XGSyU/edit#gid=0') Coins
+        p Search prices:
+          p: form(action='/' method='GET')
+            input.search-input(autofocus='' value=`${query || ''}` placeholder='Enter a search term' type='search' name='q')
+
+  p query: #{query}
+  p prices:
+    ul
+      each p, index in pricesResults
+        li= index + ': ' + p.usd
+
+  p assets:
+    table(style='width:100%', border='1')
+      thead
+        tr
+          th Asset
+          th Hodl
+          th Avg price
+          th 1M
+          th 6M
+          th 1Y
+          th Value
+      tbody
+        each a in assetsResults
+          tr
+            td= a.id
+            td= a['doc'].hodl
+            td= a['doc'].avg_price

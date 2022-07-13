@@ -13,27 +13,7 @@ const db = new pouchdb('assets')
 app.set('view engine', 'pug')
 app.use(express.static(path.join(__dirname, 'public')))
 
-// Prices function
-async function pricesQuery(query) {
-  const res = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${query}%2C&vs_currencies=usd`,)
-  return res.data
-}
-app.get('/prices', async (req, res, next) => {
-  try {
-    const prices = query = req.query.q
-    const results = await pricesQuery(query)
-
-    res.status(200).render('prices', {
-      title: 'Prices tracker',
-      results: results,
-      query,
-    })
-  } catch (err) {
-    next(err)
-  }
-})
-
-// Assets function
+// dummy portfolio directly to pouchdb
 db.bulkDocs([
   {
   "_id": "btc",
@@ -58,34 +38,41 @@ db.bulkDocs([
   },
 ])
 
-db.info().then(function (info) {
-  console.log('DB: ' + info.db_name)
-}).then(function () {
-  return db.allDocs()
-}).then(function (res) {
-  const json = res
-  console.log(res)
+//
+// For console
+//
+db.allDocs({include_docs: true}).then(function (res) {
+  const json = res.rows
 }).catch(function (err) {
   console.log(err)
 })
 
-app.get('/assets', async (req, res, next) => {
-  try {
-    const prices = req.query.q
-    const results = await assetsQuery(query)
+// Prices function
+async function pricesQuery(query) {
+  const res = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${query}%2C&vs_currencies=usd`,)
+  return res.data
+}
 
-    res.status(200).render('assets', {
-      title: 'Assets tracker',
-      results: results,
-      query,
-    })
+app.get('/', async function(req, res, next) {
+  try {
+    const query = req.query.q
+    const pricesResults = await pricesQuery(query)
+    const assetsResults = await db.allDocs({include_docs: true})
+
+    console.log(query)
+    console.log(pricesResults)
+    console.log(assetsResults)
+
+    let locals = {
+      title: 'Crypto Portfolio Tracker',
+      pricesResults: pricesResults,
+      assetsResults: assetsResults.rows,
+      query: query,
+    }
+    res.status(200).render('app', locals)
   } catch (err) {
     next(err)
   }
-})
-
-app.get('/', (req, res) => {
-  res.status(200).render('default')
 })
 const server = app.listen(process.env.PORT || 3000, () => {
   console.log(`Server started at: ${server.address().port}`)
